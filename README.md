@@ -2,7 +2,7 @@
 
 A modern, interactive portfolio website built with React, Vite, Tailwind CSS, and custom SVG glyph mechanics.
 
-## ✨ Features
+## Features
 
 - **Interactive Glyph Portal**: Smooth interactive zoom and dive transitions for the name glyphs (**H - O - A - N - G**).
 - **Dual Phase Navigation**: Smooth return-to-overview motion before diving into selected sections.
@@ -16,7 +16,7 @@ A modern, interactive portfolio website built with React, Vite, Tailwind CSS, an
 - **Integrated Resume**: Direct access to downloadable/viewable PDF CV.
 - **Responsive Layout**: Designed for seamless viewing across devices.
 
-## 🚀 Tech Stack
+## Tech Stack
 
 - **React 18**
 - **TypeScript**
@@ -24,7 +24,7 @@ A modern, interactive portfolio website built with React, Vite, Tailwind CSS, an
 - **Tailwind CSS**
 - **Lucide React**
 
-## 💻 Getting Started
+## Getting Started
 
 ### 1. Install Dependencies
 ```bash
