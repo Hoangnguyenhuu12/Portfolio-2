@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useLayoutEffect, useRef, type CSSProperties, type ReactNode } from "react";
+import { BurinSphere } from "./hero-burin-hatch";
 
 export type GlyphPortalStyle = CSSProperties & {
   "--gp-paper"?: string;
@@ -22,6 +23,8 @@ export type GlyphPortalProps = {
   annotations?: boolean;
   enterLabel?: string;
   enterHref?: string;
+  sphereInO?: boolean;
+  isDark?: boolean;
   className?: string;
   style?: GlyphPortalStyle;
   onProgress?: (progress: number) => void;
@@ -36,6 +39,70 @@ const smooth = (a: number, b: number, n: number) => {
 const DEFAULT_FONT = '"Arial Black", "Arial", sans-serif';
 type Ink = { x: number; y: number; radius: number; index: number };
 type Letter = { index: number; x: number; y: number; width: number; height: number };
+
+function findHollow(
+  context: CanvasRenderingContext2D,
+  char: string,
+  font: string
+): { x: number; y: number; rx: number; ry: number; radius: number } | null {
+  const canvas = context.canvas;
+  context.font = font;
+  const m = context.measureText(char);
+  const pad = 12;
+  const left = Math.ceil(m.actualBoundingBoxLeft);
+  const ascent = Math.ceil(m.actualBoundingBoxAscent);
+  const width = Math.max(1, Math.ceil(m.actualBoundingBoxLeft + m.actualBoundingBoxRight) + pad * 2);
+  const height = Math.max(1, Math.ceil(m.actualBoundingBoxAscent + m.actualBoundingBoxDescent) + pad * 2);
+  canvas.width = width;
+  canvas.height = height;
+  context.font = font;
+  context.fontKerning = "none";
+  context.fillText(char, pad + left, pad + ascent);
+  const pixels = context.getImageData(0, 0, width, height).data;
+
+  const cx = Math.round(pad + left + (m.actualBoundingBoxRight - m.actualBoundingBoxLeft) / 2);
+  const cy = Math.round(pad + ascent + (m.actualBoundingBoxDescent - m.actualBoundingBoxAscent) / 2);
+
+  const centerAlpha = pixels[(cy * width + cx) * 4 + 3];
+  if (centerAlpha === undefined || centerAlpha > 128) {
+    return null;
+  }
+
+  // Find exact hollow bounds by raycasting horizontally and vertically
+  let xLeft = cx;
+  while (xLeft > 0 && (pixels[(cy * width + xLeft) * 4 + 3] ?? 255) < 128) {
+    xLeft--;
+  }
+  let xRight = cx;
+  while (xRight < width - 1 && (pixels[(cy * width + xRight) * 4 + 3] ?? 255) < 128) {
+    xRight++;
+  }
+  let yTop = cy;
+  while (yTop > 0 && (pixels[(yTop * width + cx) * 4 + 3] ?? 255) < 128) {
+    yTop--;
+  }
+  let yBottom = cy;
+  while (yBottom < height - 1 && (pixels[(yBottom * width + cx) * 4 + 3] ?? 255) < 128) {
+    yBottom++;
+  }
+
+  const hollowW = xRight - xLeft;
+  const hollowH = yBottom - yTop;
+  if (hollowW < 6 || hollowH < 6) return null;
+
+  const exactCx = (xLeft + xRight) / 2;
+  const exactCy = (yTop + yBottom) / 2;
+  const rx = hollowW / 2;
+  const ry = hollowH / 2;
+
+  return {
+    x: (exactCx - pad - left) / 3,
+    y: (exactCy - pad - ascent) / 3,
+    rx: rx / 3,
+    ry: ry / 3,
+    radius: Math.min(rx, ry) / 3,
+  };
+}
 
 function interior(context: CanvasRenderingContext2D, char: string, font: string): Omit<Ink, "index"> | null {
   const canvas = context.canvas;
@@ -93,6 +160,8 @@ export default function GlyphPortal({
   annotations = false,
   enterLabel = "Enter section",
   enterHref,
+  sphereInO = true,
+  isDark,
   className,
   style,
   onProgress,
@@ -130,6 +199,7 @@ export default function GlyphPortal({
     const choices = section.querySelector<HTMLElement>("[data-gp-choices]")!;
     const buttons = Array.from(choices.querySelectorAll<HTMLButtonElement>("button"));
     const picker = section.querySelector<HTMLSelectElement>("[data-gp-select]")!;
+    const sphereWrapper = section.querySelector<HTMLElement>("[data-gp-sphere-wrapper]");
     const root = scrollParent(section);
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const canvas = document.createElement("canvas");
@@ -140,6 +210,7 @@ export default function GlyphPortal({
     let browserFrameSeen = false, stalled = false;
     let W = 1, H = 1, travel = 1, startScale = 1, endScale = 1;
     let center = { x: 0, y: 0 }, target: Ink | null = null;
+    let oHollow: { x: number; y: number; rx: number; ry: number; radius: number } | null = null;
     let lastProgress = -1;
     let candidates: Ink[] = [], letters: Letter[] = [];
     let choosing = false;
@@ -191,6 +262,36 @@ export default function GlyphPortal({
         offset += char.length;
       }
       target = candidates.find((c) => c.index === (requested !== -1 ? requested : 0)) ?? candidates[0] ?? null;
+
+      oHollow = null;
+      let oOffset = 0;
+      for (const char of Array.from(text)) {
+        if (char.toUpperCase() === "O" && !oHollow) {
+          const hollow = findHollow(context, char, scanFont);
+          if (hollow) {
+            oHollow = {
+              x: hollow.x + advances[oOffset],
+              y: hollow.y,
+              rx: hollow.rx,
+              ry: hollow.ry,
+              radius: hollow.radius,
+            };
+          }
+        }
+        oOffset += char.length;
+      }
+      if (!oHollow) {
+        const oLetter = letters.find((l) => text.slice(l.index, l.index + 1).toUpperCase() === "O");
+        if (oLetter) {
+          oHollow = {
+            x: oLetter.x + oLetter.width / 2,
+            y: oLetter.y + oLetter.height / 2,
+            rx: oLetter.width * 0.28,
+            ry: oLetter.height * 0.38,
+            radius: oLetter.width * 0.28,
+          };
+        }
+      }
       return true;
     };
 
@@ -257,6 +358,34 @@ export default function GlyphPortal({
       section.style.setProperty("--gp-caption-hit", p < 0.08 ? "auto" : "none");
       section.dataset.gpEntered = String(p >= 0.9);
       section.dataset.gpProgress = p.toFixed(5);
+
+      if (sphereWrapper && oHollow) {
+        const rad = (roll * Math.PI) / 180;
+        const dx = oHollow.x - cx;
+        const dy = oHollow.y - cy;
+        const rx = dx * Math.cos(rad) - dy * Math.sin(rad);
+        const ry = dx * Math.sin(rad) + dy * Math.cos(rad);
+
+        const screenX = W / 2 + rx * scale;
+        const screenY = H * 0.50 + H * 0.04 * eased + ry * scale;
+
+        // Multiply by 1.08 so the hatching reaches and slightly tucks right under the stroke boundary with zero gap
+        const screenDiameterX = oHollow.rx * 2 * scale * 1.08;
+        const screenDiameterY = oHollow.ry * 2 * scale * 1.08;
+        const baseSize = 240;
+
+        const scaleX = Math.max(0.001, screenDiameterX / baseSize);
+        const scaleY = Math.max(0.001, screenDiameterY / baseSize);
+
+        sphereWrapper.style.transform = `translate3d(${screenX}px, ${screenY}px, 0) translate(-50%, -50%) rotate(${roll}deg) scale(${scaleX}, ${scaleY})`;
+
+        const sphereOpacity = 1 - smooth(0.06, 0.45, p);
+        sphereWrapper.style.opacity = String(sphereOpacity);
+        sphereWrapper.style.visibility = sphereOpacity <= 0.001 ? "hidden" : "visible";
+      } else if (sphereWrapper && !oHollow) {
+        sphereWrapper.style.visibility = "hidden";
+      }
+
       if (p !== lastProgress) {
         lastProgress = p;
         progressRef.current?.(p);
@@ -397,9 +526,10 @@ export default function GlyphPortal({
         ${q}{--gp-paper:#000000;--gp-ink:#ffffff;--gp-field:#d4a373;--gp-foreground:#ffffff;position:relative;isolation:isolate;background:var(--gp-paper);color:var(--gp-ink);font-family:Arial,sans-serif;}
         ${q}>[data-gp-viewport]{position:absolute;inset:0 auto auto 0;height:100vh;height:100svh;width:0;pointer-events:none;visibility:hidden;}
         ${q} [data-gp-pin]{position:relative;height:var(--gp-height,100svh);overflow:clip;isolation:isolate;container-type:size;}
-        ${q} [data-gp-field]{position:absolute;inset:0;background:var(--gp-field);opacity:0;pointer-events:none;}
+        ${q} [data-gp-sphere-wrapper]{position:absolute;top:0;left:0;width:240px;height:240px;transform-origin:center center;pointer-events:none;z-index:1;will-change:transform,opacity;color:var(--gp-ink);}
+        ${q} [data-gp-field]{position:absolute;inset:0;background:var(--gp-field);opacity:0;pointer-events:none;z-index:2;}
         ${q}[data-gp-ready] [data-gp-field]{opacity:1;}
-        ${q} [data-gp-art]{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;}
+        ${q} [data-gp-art]{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:3;}
         ${q} [data-gp-marks]{fill:none;stroke:var(--gp-ink);opacity:.6;}
         ${q} [data-gp-choices]{position:absolute;inset:0;visibility:hidden;pointer-events:none;}
         ${q}[data-gp-choosing=true] [data-gp-choices]{visibility:visible;}
@@ -441,6 +571,15 @@ export default function GlyphPortal({
       <noscript><style>{`${q} [data-gp-fallback]{display:grid}${q} [data-gp-hint]{display:none}`}</style></noscript>
       <div data-gp-viewport aria-hidden="true" />
       <div data-gp-pin>
+        {sphereInO && (
+          <div data-gp-sphere-wrapper aria-hidden="true">
+            <BurinSphere
+              radiusFrac={0.5}
+              trackGlobalPointer={true}
+              color={isDark !== undefined ? (isDark ? "#ffffff" : "#000000") : undefined}
+            />
+          </div>
+        )}
         <div data-gp-field aria-hidden="true" {...{ inert: "" }}>
           {background ?? (
             <div
