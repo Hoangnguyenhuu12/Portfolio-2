@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --ns-muted: #4d4d4d;
+  --ns-accent: #006bff;
+}
+
+.dark {
+  --ns-muted: #8f8f8f;
+}
+
 html, body, #root {
   width: 100%;
   height: 100%;
@@ -10,3 +19,4 @@ html, body, #root {
   background-color: #000000;
   color: #ffffff;
 }
+

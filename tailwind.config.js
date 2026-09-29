@@ -6,7 +6,12 @@ export default {
     "./components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        "ns-muted": "var(--ns-muted)",
+        "ns-accent": "var(--ns-accent)",
+      },
+    },
   },
   plugins: [],
 };
