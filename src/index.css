@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Glyph Portal Jakarta";
+  src: url("/glyph-jakarta.woff2") format("woff2");
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: block;
+}
+
 :root {
   --ns-muted: #4d4d4d;
   --ns-accent: #006bff;

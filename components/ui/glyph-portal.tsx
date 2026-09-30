@@ -38,7 +38,7 @@ const smooth = (a: number, b: number, n: number) => {
   const t = clamp((n - a) / (b - a));
   return t * t * (3 - 2 * t);
 };
-const DEFAULT_FONT = '"Arial Black", "Arial", sans-serif';
+const DEFAULT_FONT = '"Glyph Portal Jakarta", "Plus Jakarta Sans", sans-serif';
 type Ink = { x: number; y: number; radius: number; index: number };
 type Letter = { index: number; x: number; y: number; width: number; height: number };
 
@@ -527,7 +527,7 @@ export default function GlyphPortal({
       style={{ "--gp-length": length, "--gp-characters": Array.from(text).length, ...style } as CSSProperties}
     >
       <style>{`
-        ${q}{--gp-paper:#000000;--gp-ink:#ffffff;--gp-field:#d4a373;--gp-foreground:#ffffff;position:relative;isolation:isolate;background:var(--gp-paper);color:var(--gp-ink);font-family:Arial,sans-serif;}
+        ${q}{--gp-paper:#000000;--gp-ink:#ffffff;--gp-field:#d4a373;--gp-foreground:#ffffff;position:relative;isolation:isolate;background:var(--gp-paper);color:var(--gp-ink);font-family:"Glyph Portal Jakarta","Plus Jakarta Sans",sans-serif;}
         ${q}>[data-gp-viewport]{position:absolute;inset:0 auto auto 0;height:100vh;height:100svh;width:0;pointer-events:none;visibility:hidden;}
         ${q} [data-gp-pin]{position:relative;height:var(--gp-height,100svh);overflow:clip;isolation:isolate;container-type:size;}
         ${q} [data-gp-sphere-wrapper]{position:absolute;top:0;left:0;width:240px;height:240px;transform-origin:center center;pointer-events:none;z-index:1;will-change:transform,opacity;color:var(--gp-ink);}

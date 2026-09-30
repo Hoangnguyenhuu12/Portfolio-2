@@ -5,7 +5,7 @@ import GlyphPortal from "@/components/ui/glyph-portal";
 import { Menu, X, ChevronDown, Mail, Phone, Copy, Check, ExternalLink } from "lucide-react";
 
 const settings = { word: "HOANG", scrollLength: 2.4, interactive: true, annotations: false };
-const family = '"Glyph Portal Jakarta", Arial, sans-serif';
+const family = '"Glyph Portal Jakarta", "Plus Jakarta Sans", sans-serif';
 let fontLoad: Promise<void> | undefined;
 
 interface SectionFeature {
@@ -265,14 +265,14 @@ export default function Demo(props: Partial<typeof settings>) {
 
     fontLoad ??= new FontFace(
       "Glyph Portal Jakarta",
-      'url("https://cdn.21st.dev/assets/mirror/15/153fc85b70298beeb1d61a5f723331649e7f23bb77302a66e61cb3e2fbdb5e79.woff2")',
-      { weight: "400 700" }
+      'url("/glyph-jakarta.woff2")',
+      { weight: "400 800" }
     ).load().then((font) => {
       document.fonts.add(font);
     });
 
-    const timeout = window.setTimeout(() => finish("Arial, sans-serif"), 1600);
-    void fontLoad.then(() => finish(family), () => finish("Arial, sans-serif"));
+    const timeout = window.setTimeout(() => finish(family), 500);
+    void fontLoad.then(() => finish(family), () => finish(family));
 
     return () => {
       settled = true;
@@ -389,7 +389,7 @@ export default function Demo(props: Partial<typeof settings>) {
         backgroundColor: isDark ? "#000000" : "#ffffff",
         color: isDark ? "#ffffff" : "#000000",
         containerType: "inline-size",
-        fontFamily: face ?? "Arial, sans-serif",
+        fontFamily: face ?? family,
         transition: "background-color 0.3s ease, color 0.3s ease",
       }}
     >
