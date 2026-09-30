@@ -154,7 +154,7 @@ const menuItems = [
 
 export default function Demo(props: Partial<typeof settings>) {
   const s = { ...settings, ...props };
-  const [face, setFace] = useState<string | null>(null);
+  const [face, setFace] = useState<string>(family);
   const [activeChar, setActiveChar] = useState<string>("H");
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
   const [isDark, setIsDark] = useState<boolean>(true);

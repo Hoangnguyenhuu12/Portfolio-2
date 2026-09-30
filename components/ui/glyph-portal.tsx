@@ -229,7 +229,7 @@ export default function GlyphPortal({
       catch { return false; }
     });
     glyph.style.fontFamily = [...available, DEFAULT_FONT].join(",");
-    stalled = available.length < families.length;
+    stalled = false;
 
     const readInk = () => {
       if (!context) return false;
@@ -335,7 +335,7 @@ export default function GlyphPortal({
     };
 
     const paint = (progress: number) => {
-      const isStatic = motion.matches || !browserFrameSeen || stalled || !target;
+      const isStatic = motion.matches || !browserFrameSeen || !target;
       const p = isStatic ? 0 : progress;
       const t = clamp(p / 0.78);
       const eased = t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2;
@@ -422,7 +422,7 @@ export default function GlyphPortal({
       section.style.setProperty("--gp-word-top", `${H * .50 - bounds.height * startScale / 2}px`);
       section.style.setProperty("--gp-word-bottom", `${H * .50 + bounds.height * startScale / 2}px`);
       section.dataset.gpReady = "true";
-      section.dataset.gpMotion = !motion.matches && browserFrameSeen && !stalled && target ? "on" : "off";
+      section.dataset.gpMotion = !motion.matches && browserFrameSeen && target ? "on" : "off";
     };
 
     const frame = (time?: number) => {
@@ -430,7 +430,6 @@ export default function GlyphPortal({
       if (disposed) return;
       if (time !== undefined && !browserFrameSeen) {
         browserFrameSeen = true;
-        stalled ||= performance.now() - mountedAt > 2500;
         dirty = true;
       }
       if (dirty) { dirty = false; layout(); }
@@ -489,6 +488,15 @@ export default function GlyphPortal({
 
     frame();
     schedule();
+
+    if (typeof document !== "undefined" && document.fonts) {
+      document.fonts.ready.then(() => {
+        if (disposed) return;
+        fontDirty = true;
+        dirty = true;
+        schedule();
+      });
+    }
 
     return () => {
       disposed = true;
