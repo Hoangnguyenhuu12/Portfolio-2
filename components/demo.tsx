@@ -995,7 +995,7 @@ export default function Demo(props: Partial<typeof settings>) {
                           </a>
 
                           <a
-                            href="https://www.instagram.com/nhuuhoanggg"
+                            href="https://www.instagram.com/huwux.hoangf"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-10 h-10 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform duration-200 cursor-pointer"
