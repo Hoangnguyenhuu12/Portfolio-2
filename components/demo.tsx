@@ -755,7 +755,7 @@ export default function Demo(props: Partial<typeof settings>) {
               </p>
               <p data-sublime-support>Explore my work.</p>
               <span data-sublime-scroll className="inline-flex items-center justify-center gap-1.5 cursor-pointer">
-                <span>Scroll down</span>
+                <span>Scroll letter by letter</span>
                 <ChevronDown className="w-3.5 h-3.5 animate-bounce" strokeWidth={2.5} />
               </span>
             </>
@@ -988,7 +988,7 @@ export default function Demo(props: Partial<typeof settings>) {
                             title="Facebook"
                           >
                             <img
-                              src={isDark ? "/facebook-dark.png" : "/facebook-light.png"}
+                              src="/facebook.png"
                               alt="Facebook"
                               className="w-full h-full object-contain"
                             />
@@ -1002,7 +1002,7 @@ export default function Demo(props: Partial<typeof settings>) {
                             title="Instagram"
                           >
                             <img
-                              src={isDark ? "/instagram-dark.png" : "/instagram-light.png"}
+                              src="/instagram.png"
                               alt="Instagram"
                               className="w-full h-full object-contain"
                             />
@@ -1016,7 +1016,7 @@ export default function Demo(props: Partial<typeof settings>) {
                             title="Strava"
                           >
                             <img
-                              src={isDark ? "/strava-dark.png" : "/strava-light.png"}
+                              src="/strava.png"
                               alt="Strava"
                               className="w-full h-full object-contain"
                             />
@@ -1030,7 +1030,7 @@ export default function Demo(props: Partial<typeof settings>) {
                             title="LinkedIn"
                           >
                             <img
-                              src={isDark ? "/linkedin-dark.png" : "/linkedin-light.png"}
+                              src="/linkedin.png"
                               alt="LinkedIn"
                               className="w-full h-full object-contain"
                             />
