@@ -23,6 +23,8 @@ export type GlyphPortalProps = {
   annotations?: boolean;
   enterLabel?: string;
   enterHref?: string;
+  secondaryLabel?: string;
+  secondaryHref?: string;
   sphereInO?: boolean;
   isDark?: boolean;
   className?: string;
@@ -160,6 +162,8 @@ export default function GlyphPortal({
   annotations = false,
   enterLabel = "Enter section",
   enterHref,
+  secondaryLabel,
+  secondaryHref,
   sphereInO = true,
   isDark,
   className,
@@ -551,7 +555,7 @@ export default function GlyphPortal({
         ${q} [data-gp-enter]{display:inline-flex;align-items:center;gap:16px;min-height:44px;color:inherit;font:inherit;text-decoration:none;letter-spacing:inherit;}
         ${q} [data-gp-enter]:focus-visible{outline:2px solid currentColor;outline-offset:5px;background:var(--gp-paper);color:var(--gp-ink);padding:0 12px;margin:0 -12px;}
         ${q} [data-gp-caption]:focus-within{opacity:1;pointer-events:auto;}
-        ${q} [data-gp-content]{box-sizing:border-box;position:relative;min-height:var(--gp-height,100svh);padding:clamp(32px,7%,100px);display:grid;align-content:center;color:var(--gp-foreground);background:var(--gp-field);overflow-wrap:anywhere;}
+        ${q} [data-gp-content]{box-sizing:border-box;position:relative;min-height:var(--gp-height,100svh);padding:clamp(32px,7%,100px);display:grid;align-content:start;color:var(--gp-foreground);background:var(--gp-field);overflow-wrap:anywhere;}
         ${q}[data-gp-motion=on] [data-gp-pin]{position:sticky;top:0;}
         ${q}[data-gp-motion=off] [data-gp-hint]{display:none;}
         ${q}[data-gp-motion=on] [data-gp-content]{margin-top:calc((var(--gp-length) - 1) * var(--gp-height));background:transparent;opacity:var(--gp-reveal,0);pointer-events:none;}
@@ -639,6 +643,15 @@ export default function GlyphPortal({
           >
             {enterLabel}
           </a>
+          {secondaryLabel && (
+            <a
+              data-gp-enter
+              href={secondaryHref ?? "#"}
+              {...(secondaryHref ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            >
+              {secondaryLabel}
+            </a>
+          )}
         </div>
       </div>
       <div data-gp-content id={`${uid}-content`} tabIndex={-1}>
