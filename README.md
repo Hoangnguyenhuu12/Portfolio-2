@@ -1,4 +1,4 @@
-# Portfolio 21
+# Portfolio 2
 
 A modern, interactive portfolio website built with React, Vite, Tailwind CSS, and custom SVG glyph mechanics.
 
