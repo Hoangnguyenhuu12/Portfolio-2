@@ -981,7 +981,7 @@ export default function Demo(props: Partial<typeof settings>) {
                         {/* 4 Social Logos: Dàn đều chính xác theo chiều ngang hình ảnh (justify-between) */}
                         <div className="flex items-center justify-between w-full px-1">
                           <a
-                            href="https://facebook.com"
+                            href="https://www.facebook.com/toilanhim"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-10 h-10 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform duration-200 cursor-pointer"
@@ -995,7 +995,7 @@ export default function Demo(props: Partial<typeof settings>) {
                           </a>
 
                           <a
-                            href="https://instagram.com"
+                            href="https://www.instagram.com/nhuuhoanggg"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-10 h-10 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform duration-200 cursor-pointer"
@@ -1009,7 +1009,7 @@ export default function Demo(props: Partial<typeof settings>) {
                           </a>
 
                           <a
-                            href="https://strava.com"
+                            href="https://www.strava.com/athletes/151048035"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-10 h-10 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform duration-200 cursor-pointer"
@@ -1023,7 +1023,7 @@ export default function Demo(props: Partial<typeof settings>) {
                           </a>
 
                           <a
-                            href="https://linkedin.com/in/hoang-nguyen-8a641b372"
+                            href="https://www.linkedin.com/in/hoang-nguyen-8a641b372"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-10 h-10 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform duration-200 cursor-pointer"
